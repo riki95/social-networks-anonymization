@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 
 def create_graph():
     g = nx.fast_gnp_random_graph(50,0.09)
-    #g = g.to_undirected()
     return g
 
 def create_ex_graph():
@@ -42,7 +41,6 @@ def compute_degree(g):
             max_degree = degree_node
         if (degree_node < min_degree):
             min_degree = degree_node
-        #print(node, degree_node)
 
     return total_degree, max_degree, min_degree
 
@@ -74,15 +72,18 @@ def h2(g):
         list_values = []
         for s, e in g.edges(n):
             list_values.append(g.degree(e))
-        #print(list_values)
         my_dict[n] = list_values
     print('H2: ', my_dict)
+
+    # TODO: Equivalence class of H2
 
 
 if __name__ == '__main__':
     #g = create_graph()
     g = create_ex_graph()
+
     print_measurements(g)
     h1(g)
     h2(g)
+
     #draw_graph(g)
