@@ -7,6 +7,21 @@ def create_graph():
     #g = g.to_undirected()
     return g
 
+def create_ex_graph():
+    g = nx.Graph()
+    g.add_edge('Alice', 'Bob')
+    g.add_edge('Bob', 'Carol')
+    g.add_edge('Bob', 'Dave')
+    g.add_edge('Bob', 'Ed')
+    g.add_edge('Dave', 'Ed')
+    g.add_edge('Dave', 'Fred')
+    g.add_edge('Dave', 'Greg')
+    g.add_edge('Ed', 'Greg')
+    g.add_edge('Ed', 'Harry')
+    g.add_edge('Fred', 'Greg')
+    g.add_edge('Greg', 'Harry')
+    return g
+
 
 def draw_graph(g):
     nx.draw(g, pos=nx.spring_layout(g), node_size=50, font_size=6, font_color='w', arrowsize=3)
@@ -21,13 +36,14 @@ def compute_degree(g):
     total_degree = 0
     max_degree = 0
     min_degree = g.number_of_nodes()
-    for node,degree_node in degree:
+    for node, degree_node in degree:
         total_degree = total_degree + degree_node
         if (degree_node > max_degree):
             max_degree = degree_node
         if (degree_node < min_degree):
             min_degree = degree_node
-    
+        #print(node, degree_node)
+
     return total_degree, max_degree, min_degree
 
 
@@ -43,8 +59,16 @@ def print_measurements(g):
     print('Min Degree: ', min_degree)
 
 
+def h1(g):
+    degree = g.degree()
+    print(degree)
+    values = set(map(lambda x:x[1], degree))
+    newlist = [[y[0] for y in degree if y[1]==x] for x in values]
+    print(newlist)
 
 if __name__ == '__main__':
-    g = create_graph()
+    #g = create_graph()
+    g = create_ex_graph()
     print_measurements(g)
+    h1(g)
     #draw_graph(g)
