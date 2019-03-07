@@ -61,14 +61,28 @@ def print_measurements(g):
 
 def h1(g):
     degree = g.degree()
-    print(degree)
+    print('H1: ', degree)
+
     values = set(map(lambda x:x[1], degree))
-    newlist = [[y[0] for y in degree if y[1]==x] for x in values]
-    print(newlist)
+    equivalence_class = [[y[0] for y in degree if y[1]==x] for x in values]
+    print('H1 Eq_Class: ', equivalence_class)
+
+
+def h2(g):
+    my_dict = {}
+    for n in g:
+        list_values = []
+        for s, e in g.edges(n):
+            list_values.append(g.degree(e))
+        #print(list_values)
+        my_dict[n] = list_values
+    print('H2: ', my_dict)
+
 
 if __name__ == '__main__':
     #g = create_graph()
     g = create_ex_graph()
     print_measurements(g)
     h1(g)
+    h2(g)
     #draw_graph(g)
