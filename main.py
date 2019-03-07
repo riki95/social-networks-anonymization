@@ -3,8 +3,8 @@ import matplotlib.pyplot as plt
 
 
 def create_graph():
-    g = nx.fast_gnp_random_graph(10,0.09)
-    g = g.to_undirected()
+    g = nx.fast_gnp_random_graph(50,0.09)
+    #g = g.to_undirected()
     return g
 
 
@@ -27,20 +27,20 @@ def compute_degree(g):
             max_degree = degree_node
         if (degree_node < min_degree):
             min_degree = degree_node
-        #print(node, degree_node)
     
-    print('\nTotal Degree: ', total_degree/g.number_of_nodes())
-    print('Max Degree: ', max_degree)
-    print('Min Degree: ', min_degree)
+    return total_degree, max_degree, min_degree
 
 
 def print_measurements(g):
-    print('Number of nodes:', g.number_of_nodes())
+    number_of_nodes = g.number_of_nodes()
+    print('Number of nodes:', number_of_nodes)
     print('Number of edges:', g.number_of_edges())
     print('Number of self-loops:', g.number_of_selfloops())
-    compute_degree(g)
-
-    #print(g.degree(['1','2','3']))
+    
+    total_degree, max_degree, min_degree = compute_degree(g)
+    print('\nTotal Degree: ', total_degree/number_of_nodes)
+    print('Max Degree: ', max_degree)
+    print('Min Degree: ', min_degree)
 
 
 
