@@ -23,7 +23,7 @@ def create_ex_graph():
 
 
 def draw_graph(g):
-    nx.draw(g, pos=nx.spring_layout(g), node_size=50, font_size=6, font_color='w', arrowsize=3)
+    nx.draw_networkx(g, pos=nx.spring_layout(g), node_size=50, font_size=10, font_color='b', arrowsize=3)
     plt.draw()
     plt.savefig('img.png', dpi=500)
     plt.close()
