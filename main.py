@@ -58,24 +58,34 @@ def print_measurements(g):
 
 
 def h1(g):
-    degree = g.degree()
-    print('H1: ', degree)
+    h1 = g.degree()
+    print('H1: ', h1)
 
-    values = set(map(lambda x:x[1], degree))
-    equivalence_class = [[y[0] for y in degree if y[1]==x] for x in values]
-    print('H1 Eq_Class: ', equivalence_class)
+    values = set(map(lambda x:x[1], h1))
+    eq_class_h1 = [[y[0] for y in h1 if y[1]==x] for x in values]
+    print('H1 Eq_Class: ', eq_class_h1)
 
 
 def h2(g):
-    my_dict = {}
-    for n in g:
+    h2_dict = {}
+    for node in g:
         list_values = []
-        for s, e in g.edges(n):
-            list_values.append(g.degree(e))
-        my_dict[n] = list_values
-    print('H2: ', my_dict)
+        for start, end in g.edges(node):
+            list_values.append(g.degree(end))
+        h2_dict[node] = list_values
+    print('H2: ', h2_dict)
 
-    # TODO: Equivalence class of H2
+    eq_class_h2 = {}
+    for key in h2_dict:
+        s = ''
+        list_values = []
+        for value in h2_dict[key]:
+            s += str(value)
+        if (eq_class_h2.get(s) == None):
+            eq_class_h2[s] = list_values
+        eq_class_h2[s].append(key)
+
+    print ('H2 Eq_Class: ', eq_class_h2)    
 
 
 if __name__ == '__main__':
