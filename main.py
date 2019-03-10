@@ -59,7 +59,7 @@ def print_measurements(g):
 
 def h1(g):
     h1 = g.degree()
-    print('H1: ', h1)
+    print('\nH1: ', h1)
 
     values = set(map(lambda x:x[1], h1))
     eq_class_h1 = [[y[0] for y in h1 if y[1]==x] for x in values]
@@ -73,19 +73,42 @@ def h2(g):
         for start, end in g.edges(node):
             list_values.append(g.degree(end))
         h2_dict[node] = list_values
-    print('H2: ', h2_dict)
+    print('\nH2: ', h2_dict)
 
     eq_class_h2 = {}
     for key in h2_dict:
         s = ''
         list_values = []
         for value in h2_dict[key]:
-            s += str(value)
+            s += str(value)  # We convert the list into a string to let it be the key
         if (eq_class_h2.get(s) == None):
-            eq_class_h2[s] = list_values
+            eq_class_h2[s] = list_values  # Initialize the value field for that empty key
         eq_class_h2[s].append(key)
 
-    print ('H2 Eq_Class: ', eq_class_h2)    
+    print ('H2 Eq_Class: ', eq_class_h2)   
+
+
+def h3(g):
+    h3_dict = {}
+    for node in g:
+        list_values = []
+        for start, end in g.edges(node):
+            for start2, end2 in g.edges(end):
+                list_values.append(g.degree(end2))
+        h3_dict[node] = list_values
+    print('\nH3: ', h3_dict)
+
+    eq_class_h3 = {}
+    for key in h3_dict:
+        s = ''
+        list_values = []
+        for value in h3_dict[key]:
+            s += str(value)  # We convert the list into a string to let it be the key
+        if (eq_class_h3.get(s) == None):
+            eq_class_h3[s] = list_values  # Initialize the value field for that empty key
+        eq_class_h3[s].append(key)
+
+    print ('H3 Eq_Class: ', eq_class_h3)  
 
 
 if __name__ == '__main__':
@@ -95,5 +118,6 @@ if __name__ == '__main__':
     print_measurements(g)
     h1(g)
     h2(g)
+    h3(g)
 
     #draw_graph(g)
