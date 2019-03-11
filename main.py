@@ -7,6 +7,7 @@ def create_random_graph(n, p):
     gc = max(nx.connected_component_subgraphs(g), key=len)
     return gc
 
+
 def create_scale_free_graph(n):
     return nx.scale_free_graph(n)
 
@@ -93,20 +94,25 @@ def eq_class(hi_dict: dict):
     return eq_class
 
 
+def deanonymize(g, i):
+    h = hi(g, i)
+    eq = eq_class(h)
+
+    print('[h{}] {} classes'.format(i, len(eq)))
+    print('[h{}] {:.0%} deanonymization'.format(i, len(eq) / len(g)))
+    print()
+
 if __name__ == '__main__':
-    #g = create_random_graph(50, 0.1)
+    g = create_random_graph(500, 0.01)
     #g = create_scale_free_graph(50)
-    g = create_ex_graph()
+    #g = create_ex_graph()
 
     #print_measurements(g)
 
-    h = hi(g, 2)
-
-    eq = eq_class(h)
-
-    print('{} classes'.format(len(eq)))
-    print('{:.0%} deanonimization'.format(len(eq) / len(g)))
-    for k,v in eq.items():
-        print('{}: {}'.format(k,v))
+    for i in range(1, 5):
+        deanonymize(g, i)
+    
+    #for k,v in eq.items():
+    #    print('{}: {}'.format(k,v))
 
     #draw_graph(g)
