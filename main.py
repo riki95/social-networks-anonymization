@@ -35,38 +35,19 @@ def draw_graph(g, name):
     plt.savefig('{}.png'.format(name), dpi=500)
     plt.close()
 
-
-def compute_degree(g):
-    degree = g.degree()
-
-    total_degree = 0
-    max_degree = 0
-    min_degree = g.number_of_nodes()
-    for node, degree_node in degree:
-        total_degree = total_degree + degree_node
-        if (degree_node > max_degree):
-            max_degree = degree_node
-        if (degree_node < min_degree):
-            min_degree = degree_node
-
-    return total_degree/g.number_of_nodes(), max_degree, min_degree
-
-
 def print_measurements(g):
-    number_of_nodes = g.number_of_nodes()
-    print('Number of nodes:', number_of_nodes)
-    print('Number of edges:', g.number_of_edges())
-    print('Number of self-loops:', g.number_of_selfloops())
-    
-    avg_degree, max_degree, min_degree = compute_degree(g)
-    print('\nTotal Degree: ', avg_degree)
-    print('Max Degree: ', max_degree)
-    print('Min Degree: ', min_degree)
+    print(nx.info(g))
+
+    # TODO: check if it can be refactored in a better way
+    l = []
+    for n, degree in g.degree():
+        l.append(degree)
+    l = sorted(l)
+    print ('Median: ', l[int(len(l)/2)])
 
 
 def hi(g, i: int):
     neighbors = {n: knbrs(g, n, i-1) for n in g.nodes()}
-    #print(neighbors)
 
     res = {}
     for k,v in neighbors.items():
@@ -105,27 +86,20 @@ def deanonymize(g, i):
     print('[h{}] {} equivalence classes ({:.0%})'.format(i, len(eq), len(eq) / len(g)))
 
     print('[h{}] {:.0%} deanonymization'.format(i, len(deanonymized_nodes) / len(g)))
-    #print(deanonymized_nodes)
     
     print()
 
 
-# remove p% of edges from each node
-# add the same number of edge to DIFFERENT nodes
 def perturbation(graph, p):
     g = graph.copy()
     edges_to_remove = int(len(g.edges()) * p)
-    print('Will remove {} edges'.format(edges_to_remove))
-    print('Before perturbation: ', g.edges())
     
     removed_edges = []
     for i in range(edges_to_remove):
         random_edge = random.choice(list(g.edges()))
-        g.remove_edges_from(random_edge)
+        g.remove_edges_from([random_edge])
         removed_edges.append(random_edge)
-    print('Removed: ', removed_edges)
 
-    print('\nNew graph: ', g.edges())
     while(edges_to_remove > 0):
         first_node = random.choice(list(g.nodes()))
         second_node = random.choice(list(g.nodes()))
@@ -135,16 +109,14 @@ def perturbation(graph, p):
             continue
         else:
             g.add_edge(first_node, second_node)
-            #print('Add: ', first_node, second_node)
             edges_to_remove -= 1
     
-    print('Final graph', g.edges())
     return g
 
 
 if __name__ == '__main__':
     #g = create_random_graph(500, 0.01)
-    #g = create_scale_free_graph(50)
+    #g = create_scale_free_graph(500)
     g = create_ex_graph()
 
     print_measurements(g)
@@ -157,6 +129,10 @@ if __name__ == '__main__':
 
     #draw_graph(g, 'before_perturbation')
 
-    pert_graph = perturbation(g, 0.5)
-    print_measurements(pert_graph)
+    pert_list = [0.05, 0.1, 0.5, 1]
+    for pert in pert_list:
+        print('\n\tPerturbation: ', pert)
+        pert_graph = perturbation(g, pert)
+        print_measurements(pert_graph)
+        
     #draw_graph(pert_graph, 'after_perturbation')
