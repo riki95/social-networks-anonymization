@@ -6,6 +6,7 @@ def create_graph():
     g = nx.fast_gnp_random_graph(50,0.09)
     return g
 
+
 def create_ex_graph():
     g = nx.Graph()
     g.add_edge('Alice', 'Bob')
@@ -57,67 +58,50 @@ def print_measurements(g):
     print('Min Degree: ', min_degree)
 
 
-def h1(g):
-    h1 = g.degree()
-    print('\nH1: ', h1)
+def hi(g, i: int):
+    neighbors = {n: knbrs(g, n, i-1) for n in g.nodes()}
+    print(neighbors)
 
-    values = set(map(lambda x:x[1], h1))
-    eq_class_h1 = [[y[0] for y in h1 if y[1]==x] for x in values]
-    print('H1 Eq_Class: ', eq_class_h1)
-
-
-def h2(g):
-    h2_dict = {}
-    for node in g:
-        list_values = []
-        for start, end in g.edges(node):
-            list_values.append(g.degree(end))
-        h2_dict[node] = list_values
-    print('\nH2: ', h2_dict)
-
-    eq_class_h2 = {}
-    for key in h2_dict:
-        s = ''
-        list_values = []
-        for value in h2_dict[key]:
-            s += str(value)  # We convert the list into a string to let it be the key
-        if (eq_class_h2.get(s) == None):
-            eq_class_h2[s] = list_values  # Initialize the value field for that empty key
-        eq_class_h2[s].append(key)
-
-    print ('H2 Eq_Class: ', eq_class_h2)   
+    res = {}
+    for k,v in neighbors.items():
+        res[k] = sorted([g.degree(n) for n in v])
+    
+    return res
 
 
-def h3(g):
-    h3_dict = {}
-    for node in g:
-        list_values = []
-        for start, end in g.edges(node):
-            for start2, end2 in g.edges(end):
-                list_values.append(g.degree(end2))
-        h3_dict[node] = list_values
-    print('\nH3: ', h3_dict)
+def knbrs(g, start, k):
+    nbrs = set([start])
+    for l in range(k):
+        nbrs = set((nbr for n in nbrs for nbr in g[n]))
+    return nbrs
 
-    eq_class_h3 = {}
-    for key in h3_dict:
-        s = ''
-        list_values = []
-        for value in h3_dict[key]:
-            s += str(value)  # We convert the list into a string to let it be the key
-        if (eq_class_h3.get(s) == None):
-            eq_class_h3[s] = list_values  # Initialize the value field for that empty key
-        eq_class_h3[s].append(key)
 
-    print ('H3 Eq_Class: ', eq_class_h3)  
+def eq_class(hi_dict: dict):
+    eq_class = {}
+    for key, degrees in hi_dict.items():
+        k = tuple(sorted(degrees))
+        
+        if k not in eq_class:
+            eq_class[k] = [] # Initialize the value field for that empty key
+        
+        eq_class[k].append(key)
+
+    return eq_class
 
 
 if __name__ == '__main__':
     #g = create_graph()
     g = create_ex_graph()
 
-    print_measurements(g)
-    h1(g)
-    h2(g)
-    h3(g)
+    #print_measurements(g)
+    # h1(g)
+    # h2(g)
+    # h3(g)
+    h = hi(g, 2)
+    print(h)
+    print()
+
+    eq = eq_class(h)
+    print(eq)
 
     #draw_graph(g)
