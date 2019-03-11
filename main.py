@@ -2,9 +2,13 @@ import networkx as nx
 import matplotlib.pyplot as plt
 
 
-def create_graph():
-    g = nx.fast_gnp_random_graph(50,0.09)
-    return g
+def create_random_graph(n, p):
+    g = nx.fast_gnp_random_graph(n, p)
+    gc = max(nx.connected_component_subgraphs(g), key=len)
+    return gc
+
+def create_scale_free_graph(n):
+    return nx.scale_free_graph(n)
 
 
 def create_ex_graph():
@@ -60,7 +64,7 @@ def print_measurements(g):
 
 def hi(g, i: int):
     neighbors = {n: knbrs(g, n, i-1) for n in g.nodes()}
-    print(neighbors)
+    #print(neighbors)
 
     res = {}
     for k,v in neighbors.items():
@@ -90,18 +94,19 @@ def eq_class(hi_dict: dict):
 
 
 if __name__ == '__main__':
-    #g = create_graph()
+    #g = create_random_graph(50, 0.1)
+    #g = create_scale_free_graph(50)
     g = create_ex_graph()
 
     #print_measurements(g)
-    # h1(g)
-    # h2(g)
-    # h3(g)
+
     h = hi(g, 2)
-    print(h)
-    print()
 
     eq = eq_class(h)
-    print(eq)
+
+    print('{} classes'.format(len(eq)))
+    print('{:.0%} deanonimization'.format(len(eq) / len(g)))
+    for k,v in eq.items():
+        print('{}: {}'.format(k,v))
 
     #draw_graph(g)
