@@ -1,16 +1,23 @@
 import networkx as nx
 import matplotlib.pyplot as plt
 import random
+from statistics import median
+import pandas as pd
+from math import inf
+
+
+def giant_comp(g):
+    return max(nx.connected_component_subgraphs(g), key=len)
 
 
 def create_random_graph(n, p):
     g = nx.fast_gnp_random_graph(n, p)
-    gc = max(nx.connected_component_subgraphs(g), key=len)
-    return gc
+    return giant_comp(g)
 
 
 def create_scale_free_graph(n):
-    return nx.scale_free_graph(n)
+    g = nx.scale_free_graph(n)
+    return nx.Graph(g)
 
 
 def create_ex_graph():
@@ -29,21 +36,31 @@ def create_ex_graph():
     return g
 
 
-def draw_graph(g, name):
-    nx.draw_networkx(g, pos=nx.spring_layout(g), node_size=50, font_size=10, font_color='b', arrowsize=3)
+def draw_graph(g, pert, layout):
+    p = int(pert*100)
+    nx.draw_networkx(g, pos=layout, node_size=5, font_size=2, font_color='b', arrowsize=3)
     plt.draw()
-    plt.savefig('{}.png'.format(name), dpi=500)
+    plt.savefig('img/pert_{}.png'.format(p), dpi=500)
     plt.close()
 
-def print_measurements(g):
-    print(nx.info(g))
+def get_measurements(g):
+    data = pd.Series()
 
-    # TODO: check if it can be refactored in a better way
-    l = []
-    for n, degree in g.degree():
-        l.append(degree)
-    l = sorted(l)
-    print ('Median: ', l[int(len(l)/2)])
+    data['nodes'] = len(g)
+    data['edges'] = len(g.edges())
+    data['components'] = nx.number_connected_components(g)
+
+    data['diameter'] = nx.diameter(giant_comp(g))
+
+    all_paths = dict(nx.shortest_path_length(g))
+    path_lengths = [path for paths in all_paths.values() for path in paths.values()]
+    data['path length'] = median(path_lengths)
+
+    data['closeness'] = median(nx.closeness_centrality(g).values())
+    data['betweenness'] = median(nx.betweenness_centrality(g).values())
+    data['clustering'] = median(nx.clustering(g).values())
+
+    return data
 
 
 def hi(g, i: int):
@@ -51,7 +68,10 @@ def hi(g, i: int):
 
     res = {}
     for k,v in neighbors.items():
-        res[k] = sorted([g.degree(n) for n in v])
+        if i == 0:
+            res[k] = [0]
+        else:
+            res[k] = sorted([g.degree(n) for n in v])
     
     return res
 
@@ -78,16 +98,30 @@ def eq_class(hi_dict: dict):
 
 def deanonymize(g, i):
     h = hi(g, i)
-    eq = eq_class(h)
+    print('[{}] {}'.format(i, h))
 
-    deanonymized_nodes = {v[0] for k,v in eq.items() if len(v) == 1}
+    eq = eq_class(h).values()
 
-    print('[h{}] {} nodes'.format(i, len(g)))
-    print('[h{}] {} equivalence classes ({:.0%})'.format(i, len(eq), len(eq) / len(g)))
+    print(i)
+    print(eq)
 
-    print('[h{}] {:.0%} deanonymization'.format(i, len(deanonymized_nodes) / len(g)))
+    f = lambda vals, minv, maxv: {v[0] for v in vals if len(v) >= minv and len(v) <= maxv}
+
+    deanonymized_nodes = {}
     
-    print()
+    deanonymized_nodes['1'] = f(eq, 1, 1)
+    deanonymized_nodes['2-4'] = f(eq, 2, 4)
+    deanonymized_nodes['5-10'] = f(eq, 5, 10)
+    deanonymized_nodes['11-20'] = f(eq, 11, 20)
+    deanonymized_nodes['20-inf'] = f(eq, 2, inf)
+
+    data = pd.Series()
+
+    #data['h{} equivalence classes'.format(i)] = len(eq)
+    for k,v in deanonymized_nodes.items():
+        data['h{} deanonymization [{}]'.format(i, k)] = len(v) / len(g)
+    
+    return data
 
 
 def perturbation(graph, p):
@@ -115,24 +149,21 @@ def perturbation(graph, p):
 
 
 if __name__ == '__main__':
-    #g = create_random_graph(500, 0.01)
-    #g = create_scale_free_graph(500)
+    #g = create_random_graph(1000, 0.005)
+    #g = create_scale_free_graph(1000)
     g = create_ex_graph()
-
-    print_measurements(g)
-
-    #for i in range(1, 5):
-    #    deanonymize(g, i)
     
-    #for k,v in eq.items():
-    #    print('{}: {}'.format(k,v))
+    layout = nx.spring_layout(g)
 
-    #draw_graph(g, 'before_perturbation')
-
-    pert_list = [0.05, 0.1, 0.5, 1]
-    for pert in pert_list:
-        print('\n\tPerturbation: ', pert)
+    measures = {}
+    for pert in [0, 0.05, 0.1, 0.5, 1]:
         pert_graph = perturbation(g, pert)
-        print_measurements(pert_graph)
-        
-    #draw_graph(pert_graph, 'after_perturbation')
+        #draw_graph(pert_graph, pert, layout)
+
+        measures[pert] = pd.concat([
+            get_measurements(pert_graph),
+            *[deanonymize(pert_graph, i) for i in range(0, 5)]
+        ])
+
+    df = pd.DataFrame(measures)
+    print(df)
