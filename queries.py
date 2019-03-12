@@ -25,8 +25,11 @@ def knbrs(g, start, k):
 def edge_facts_subgraph(graph, n):
     g = get_subgraph(graph, n)
 
-    pass
-    return hi(g, 1)
+    for e in g.edges():
+        if e in graph.edges():
+            print('{} belongs to the graph'.format(e))
+
+    return g
 
 
 def get_subgraph(g, n):

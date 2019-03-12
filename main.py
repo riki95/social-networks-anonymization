@@ -3,6 +3,7 @@ import pandas as pd
 
 import anonymity
 import graph
+import queries
 
 
 def main():
@@ -13,20 +14,22 @@ def main():
     
     layout = nx.spring_layout(g)
 
-    measures = {}
-    for pert in [0, 0.05, 0.1, 0.5, 1]:
-        pert_graph = anonymity.perturbation(g, pert)
-        #graph.draw_graph(pert_graph, pert, layout)
+    # measures = {}
+    # for pert in [0, 0.05, 0.1, 0.5, 1]:
+    #     pert_graph = anonymity.perturbation(g, pert)
+    #     #graph.draw_graph(pert_graph, pert, layout)
 
-        measures[pert] = pd.concat([
-            graph.get_measurements(pert_graph),
-            *[anonymity.deanonymize_h(pert_graph, i) for i in range(0, 5)],
-            *[anonymity.deanonymize_edgefacts(pert_graph, n) for n in range(0, 10, 5)]
-        ])
+    #     measures[pert] = pd.concat([
+    #         graph.get_measurements(pert_graph),
+    #         *[anonymity.deanonymize_h(pert_graph, i) for i in range(0, 5)],
+    #         *[anonymity.deanonymize_edgefacts(pert_graph, n) for n in range(0, 10, 5)]
+    #     ])
 
-    df = pd.DataFrame(measures)
-    print(df)
+    # df = pd.DataFrame(measures)
+    # print(df)
 
+    subgraph = queries.edge_facts_subgraph(g, 5)   
+    print('Edges discovered: {} out of {}'.format(len(subgraph.edges()), len(g.edges())))
 
 if __name__ == '__main__':
     main()
