@@ -20,7 +20,8 @@ def main():
 
         measures[pert] = pd.concat([
             graph.get_measurements(pert_graph),
-            *[anonymity.deanonymize(pert_graph, i) for i in range(0, 5)]
+            *[anonymity.deanonymize_h(pert_graph, i) for i in range(0, 5)],
+            *[anonymity.deanonymize_edgefacts(pert_graph, n) for n in range(0, 10, 5)]
         ])
 
     df = pd.DataFrame(measures)

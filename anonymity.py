@@ -30,12 +30,19 @@ def perturbation(graph, p):
     return g
 
 
-def deanonymize(g, i, use_edge_facts=False):
-    if use_edge_facts:
-        facts = None
-    else:
-        facts = queries.hi(g, i)
+def deanonymize_h(g, i):
+    h = queries.hi(g, i)
 
+    return deanonymize(h, 'h({})'.format(i))
+
+
+def deanonymize_edgefacts(g, n):
+    edgefacts = queries.edge_facts_subgraph(g, n)
+
+    return deanonymize(edgefacts, 'edgefacts({})'.format(n))
+
+
+def deanonymize(facts, query_name):
     eq = eq_class(facts).values()
 
     f = lambda vals, minv, maxv: [len(v) for v in vals if len(v) >= minv and len(v) <= maxv]
@@ -51,10 +58,8 @@ def deanonymize(g, i, use_edge_facts=False):
     tot = sum([vv for v in deanonymized_nodes.values() for vv in v])
 
     data = pd.Series()
-
-    name = 'edgefacts({}) deanonymization [{}]' if use_edge_facts else 'h({}) deanonymization [{}]'
     for k,v in deanonymized_nodes.items():
-        data[name.format(i, k)] = sum(v) / tot
+        data['{} deanonymization [{}]'.format(query_name, k)] = sum(v) / tot
     
     return data
 
