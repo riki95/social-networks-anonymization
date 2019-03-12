@@ -98,12 +98,8 @@ def eq_class(hi_dict: dict):
 
 def deanonymize(g, i):
     h = hi(g, i)
-    print('[{}] {}'.format(i, h))
 
     eq = eq_class(h).values()
-
-    print(i)
-    print(eq)
 
     f = lambda vals, minv, maxv: {v[0] for v in vals if len(v) >= minv and len(v) <= maxv}
 
