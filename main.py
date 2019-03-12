@@ -101,7 +101,7 @@ def deanonymize(g, i):
 
     eq = eq_class(h).values()
 
-    f = lambda vals, minv, maxv: {v[0] for v in vals if len(v) >= minv and len(v) <= maxv}
+    f = lambda vals, minv, maxv: [len(v) for v in vals if len(v) >= minv and len(v) <= maxv]
 
     deanonymized_nodes = {}
     
@@ -109,13 +109,13 @@ def deanonymize(g, i):
     deanonymized_nodes['2-4'] = f(eq, 2, 4)
     deanonymized_nodes['5-10'] = f(eq, 5, 10)
     deanonymized_nodes['11-20'] = f(eq, 11, 20)
-    deanonymized_nodes['20-inf'] = f(eq, 2, inf)
+    deanonymized_nodes['20-inf'] = f(eq, 20, inf)
+
+    tot = sum([vv for v in deanonymized_nodes.values() for vv in v])
 
     data = pd.Series()
-
-    #data['h{} equivalence classes'.format(i)] = len(eq)
     for k,v in deanonymized_nodes.items():
-        data['h{} deanonymization [{}]'.format(i, k)] = len(v) / len(g)
+        data['h{} deanonymization [{}]'.format(i, k)] = sum(v) / tot
     
     return data
 
