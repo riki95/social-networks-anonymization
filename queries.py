@@ -29,7 +29,7 @@ def edge_facts_subgraph(graph, n):
         if e in graph.edges():
             print('{} belongs to the graph'.format(e))
 
-    return g
+    return hi(g, 1)
 
 
 def get_subgraph(g, n):
