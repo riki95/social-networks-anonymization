@@ -22,19 +22,25 @@ def knbrs(g, start, k):
     return nbrs
 
 
-def edge_facts_subgraph(graph, n):
-    g = get_subgraph(graph, n)
+def edge_facts_subgraph(g, g_pert, n):
+    res = {}
 
-    for e in g.edges():
-        if e in graph.edges():
-            print('{} belongs to the graph'.format(e))
+    for start in g.nodes:
+        fact = get_subgraph(g, n, start)
 
-    return hi(g, 1)
+        res[start] = []
+
+        for node in g_pert.nodes:
+            subgraphs = [get_subgraph(g_pert, n, node)] # should instead get all possible subgraphs
+
+            for subgraph in subgraphs:
+                if nx.is_isomorphic(fact, subgraph):
+                    res[start].append(node)
+
+    return res
 
 
-def get_subgraph(g, n):
-    start = choice(list(g))
-
+def get_subgraph(g, n, start):
     graph = nx.Graph()
     graph.add_node(start)
 

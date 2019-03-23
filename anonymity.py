@@ -33,11 +33,17 @@ def perturbation(graph, p):
 def deanonymize_h(g, i):
     h = queries.hi(g, i)
 
+    #print('h', i)
+    #print(h)
+
     return deanonymize(h, 'h({})'.format(i))
 
 
-def deanonymize_edgefacts(g, n):
-    edgefacts = queries.edge_facts_subgraph(g, n)
+def deanonymize_edgefacts(g, g_pert, n):
+    edgefacts = queries.edge_facts_subgraph(g, g_pert, n)
+
+    #print('ef', n)
+    #print(edgefacts)
 
     return deanonymize(edgefacts, 'edgefacts({})'.format(n))
 
