@@ -4,3 +4,10 @@ __pycache__
 a
 img/
 data/
+csv to dataset/emails.csv
+.vscode/settings.json
+csv to dataset/output.txt
+csv to dataset/graph.csv
+csv to dataset/newcsv.txt
+csv to dataset/enron.csv
+csv to dataset/enron.txt
