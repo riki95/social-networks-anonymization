@@ -1,6 +1,8 @@
 from random import choice
 import networkx as nx
 
+from sys import stderr
+
 
 def hi(g, i: int):
     neighbors = {n: knbrs(g, n, i-1) for n in g.nodes()}
@@ -11,7 +13,7 @@ def hi(g, i: int):
             res[k] = [0]
         else:
             res[k] = sorted([g.degree(n) for n in v])
-    
+
     return res
 
 
@@ -25,6 +27,9 @@ def knbrs(g, start, k):
 def edge_facts_subgraph(g, g_pert, n):
     res = {}
 
+    nodes_no = len(g.nodes) * len(g_pert.nodes)
+    i = 0
+
     for start in g.nodes:
         fact = get_subgraph(g, n, start)
 
@@ -37,6 +42,9 @@ def edge_facts_subgraph(g, g_pert, n):
                 if nx.is_isomorphic(fact, subgraph):
                     res[start].append(node)
 
+            i += 1
+            print('[{}] {:.3%}\t\r'.format(n, i/nodes_no), file=stderr, end='')
+
     return res
 
 
@@ -48,7 +56,7 @@ def get_subgraph(g, n, start):
         for edge in edges:
             if n == 0:
                 break
-            
+
             graph.add_edge(node, edge)
             n -= 1
 
